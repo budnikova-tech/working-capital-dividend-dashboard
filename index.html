@@ -1,0 +1,531 @@
+<html lang="ru"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Дивиденды и оборотный капитал</title>
+<style>
+:root{
+  --bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e6eaf0;
+  --accent:#2457ff;--good:#17875d;--warn:#c57a00;--bad:#c23b3b;--soft:#eef3ff;
+  --softgood:#eaf7f0;--softbad:#fff0f0;--softwarn:#fff8e8;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--text)}
+.wrap{max-width:1480px;margin:0 auto;padding:24px}
+.header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:18px}
+h1{font-size:30px;margin:0 0 6px}
+.subtitle{color:var(--muted);font-size:14px;max-width:940px;line-height:1.5}
+.badge{background:#fff;border:1px solid var(--line);padding:9px 12px;border-radius:12px;font-size:12px;color:var(--muted)}
+.section{margin-top:18px}
+.section-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;margin:0 0 10px}
+.section-title{font-size:18px;font-weight:800}
+.section-sub{font-size:12px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 2px 8px rgba(16,24,40,.04);padding:18px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.kpi .name{font-size:12px;color:var(--muted);min-height:30px}
+.kpi .num{font-size:27px;font-weight:800;margin-top:6px}
+.kpi .foot{font-size:11px;color:var(--muted);margin-top:5px}
+.hero{padding:24px;border:2px solid #d9e2ff;background:linear-gradient(180deg,#fff 0%,#f8faff 100%)}
+.hero .eyebrow{font-size:12px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.hero .big{font-size:26px;font-weight:800;line-height:1.3;margin-top:8px}
+.hero .detail{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.55}
+.goal-chip{display:inline-flex;align-items:center;gap:7px;margin-top:12px;padding:8px 11px;border-radius:999px;font-size:12px;font-weight:700}
+.goal-good{background:var(--softgood);color:#13643f}.goal-bad{background:var(--softbad);color:#8e2c2c}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.problem-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;align-items:center}
+.pbox{border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center;min-height:108px}
+.pbox .t{font-size:11px;color:var(--muted)}
+.pbox .n{font-size:24px;font-weight:800;margin:8px 0 4px}
+.pbox.bad{background:var(--softbad);border-color:#f2caca}
+.frozen-row{margin:14px 0}
+.frozen-label{display:flex;justify-content:space-between;gap:12px;font-size:12px;margin-bottom:6px}
+.bar{height:18px;background:#edf0f5;border-radius:999px;overflow:hidden;position:relative}
+.total{height:100%;background:#dfe5ef;border-radius:999px}
+.potential{height:100%;position:absolute;left:0;top:0;background:var(--accent);border-radius:999px}
+.potential.good{background:var(--good)}.potential.none{background:#cfd5df}
+.tag{display:inline-block;padding:4px 7px;border-radius:999px;font-size:10px;font-weight:700}
+.tag-good{background:var(--softgood);color:#13643f}.tag-neutral{background:#f2f4f7;color:#667085}.tag-warn{background:var(--softwarn);color:#7a5200}
+.action{border:1px solid var(--line);border-radius:16px;padding:16px}
+.action .top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.action .title{font-weight:800;font-size:15px}
+.action .big{font-size:22px;font-weight:800;margin:12px 0 4px}
+.action .small{font-size:11px;color:var(--muted);line-height:1.45}
+.action .effect{font-size:13px;font-weight:800;color:var(--good);margin-top:8px}
+canvas{width:100%;height:300px;background:#fff;border-radius:12px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:8px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--bad);margin-right:5px}
+.dot.g{background:var(--good)}
+.waterfall{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;align-items:center}
+.step{padding:14px;border:1px solid var(--line);border-radius:14px;text-align:center;min-height:90px}
+.step .t{font-size:11px;color:var(--muted)}
+.step .n{font-size:18px;font-weight:800;margin-top:7px}
+.controls-layout{display:grid;grid-template-columns:330px 1fr;gap:18px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;height:max-content}
+.panel h2{font-size:17px;margin:0 0 14px}
+.control{padding:14px 0;border-bottom:1px solid var(--line)}
+.control:last-child{border-bottom:0}
+.labelrow{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:8px}
+.label{font-size:13px;font-weight:700}
+.value{font-size:13px;color:var(--accent);font-weight:700}
+input[type=range]{width:100%}
+.small{font-size:11px;color:var(--muted);line-height:1.4;margin-top:5px}
+.table{width:100%;border-collapse:collapse;font-size:12px}
+.table th,.table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:right}
+.table th:first-child,.table td:first-child{text-align:left}
+.table th{color:var(--muted);font-weight:700}
+.note{padding:12px 14px;border-radius:12px;background:var(--softwarn);color:#7a5200;font-size:12px;line-height:1.45}
+.assump{font-size:11px;color:var(--muted);line-height:1.5}
+.highlight{color:var(--accent)}
+@media(max-width:1100px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .grid2,.grid3,.controls-layout{grid-template-columns:1fr}
+  .problem-flow,.waterfall{grid-template-columns:1fr 1fr}
+}
+@media(max-width:650px){
+  .kpis,.problem-flow,.waterfall{grid-template-columns:1fr}
+  .header{flex-direction:column}
+}
+
+.scenario-box{
+  position:fixed;left:14px;top:14px;z-index:20;width:230px;
+  background:#fff;border:1px solid var(--line);border-radius:16px;
+  box-shadow:0 6px 18px rgba(16,24,40,.08);padding:10px;
+}
+.scenario-box .scenario-title{font-size:10px;font-weight:800;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.scenario-box select{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--text);font-weight:700;font-size:12px}
+.scenario-desc{font-size:10px;color:var(--muted);line-height:1.35;margin-top:6px}
+@media(max-width:900px){.scenario-box{position:static;width:100%;margin-bottom:14px}.wrap{padding-top:18px}}
+
+
+.explain-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px;margin-top:14px}
+.explain-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbfcfe}
+.explain-card h4{margin:0 0 8px;font-size:13px}
+.explain-card p{margin:0;font-size:12px;color:#475467;line-height:1.5}
+.formula-box{margin-top:10px;padding:10px 12px;border-radius:10px;background:#f3f6ff;font-size:12px;line-height:1.5;color:#344054}
+.ba-layout{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}
+.limits-box{background:#fbfcfe;border:1px solid var(--line);border-radius:14px;padding:16px}
+.limits-box .section-title{margin-bottom:8px}
+.limits-box .assump{font-size:12px;line-height:1.55;color:#475467}
+@media(max-width:1100px){.explain-grid,.ba-layout{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="scenario-box">
+  <div class="scenario-title">Сценарий</div>
+  <select id="scenarioSelect">
+    <option value="current">1. Текущая ситуация</option>
+    <option value="realistic" selected="">2. Реалистичная оптимизация</option>
+    <option value="target3">3. Цель: закрыть долг за 3 года</option>
+    <option value="target5">4. Цель: закрыть долг за 5 лет</option>
+  </select>
+  <div class="scenario-desc" id="scenarioDesc">Умеренная оптимизация: B2B 30 дней, ГП 51.4 млн ₽, материалы 27 млн ₽, НЗП 7 млн ₽ и рост СТМ примерно на 5.7 млн ₽ в месяц. Материалы под рост СТМ учитываются автоматически.</div>
+</div>
+
+  <div class="header">
+    <div>
+      <h1>Управление дивидендами и оборотным капиталом</h1>
+      <div class="subtitle">Все денежные показатели обезличены и изменены для публичной демонстрации. Демонстрационная модель показывает, как изменения в оборотном капитале и структуре продаж влияют на выплату дивидендов и сокращение накопленной задолженности.</div>
+    </div>
+    <div class="badge">Демо-данные · минимальный остаток: 30 млн ₽</div>
+  </div>
+
+  <section class="section">
+    <div class="kpis">
+      <div class="card kpi"><div class="name">Долг сейчас</div><div class="num">22.9 млн ₽</div><div class="foot">накопленные дивиденды</div></div>
+      <div class="card kpi"><div class="name">Долг через год без изменений</div><div class="num" id="debtYearNoChange">26.3 млн ₽</div><div class="foot">при выплате 5 из 6 млн ₽/мес.</div></div>
+      <div class="card kpi"><div class="name">Разово можно высвободить</div><div class="num" id="releaseKpi">7,2 млн ₽</div><div class="foot">B2B + запасы - доп. ДЗ СТМ</div></div>
+      <div class="card kpi"><div class="name">Долг после перестройки</div><div class="num" id="debtAfterKpi">15,6 млн ₽</div><div class="foot">после разового эффекта</div></div>
+      <div class="card kpi"><div class="name">Срок погашения</div><div class="num" id="termKpi">17 мес.</div><div class="foot">при выбранном сценарии</div></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="card hero">
+      <div class="eyebrow">Рекомендуемый сценарий</div>
+      <div class="big" id="heroText">Выбранный сценарий позволяет закрыть старый дивидендный долг примерно за 17 мес.</div>
+      <div class="detail" id="heroDetail">Чтобы изменить траекторию долга, модель предполагает: B2B 50 → 30 дней, ГП 21.428571 → 15.69 млн ₽, материалы 8.571429 → 7.74 млн ₽, НЗП 2.857143 → 2.03 млн ₽, дополнительную выручку СТМ 5,7 млн ₽ в месяц. Это дает разовое высвобождение 7,2 млн ₽, после чего остается 15,6 млн ₽ старого долга. Дополнительная ЧП СТМ составляет 3,7 млн ₽ в месяц. Из нее 2,2 млн ₽ формируют новые текущие дивиденды, 0,6 млн ₽ остается в бизнесе как резерв на рост, а остаток 0,9 млн ₽ автоматически направляется на погашение старого долга.</div>
+      <div id="goalChip" class="goal-chip goal-good">Цель ≤ 36 мес. достигнута</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div><div class="section-title">Почему долг растет</div><div class="section-sub">Текущая экономика дивидендов</div></div>
+    </div>
+    <div class="card">
+      <div class="problem-flow">
+        <div class="pbox"><div class="t">Чистая прибыль / мес.</div><div class="n">10,0</div><div class="t">млн ₽</div></div>
+        <div class="pbox"><div class="t">Начислено дивидендов</div><div class="n">6,0</div><div class="t">млн ₽ · 60% ЧП</div></div>
+        <div class="pbox"><div class="t">Фактически выплачивается</div><div class="n">5,0</div><div class="t">млн ₽</div></div>
+        <div class="pbox bad"><div class="t">Рост долга</div><div class="n">+1,0</div><div class="t">млн ₽ каждый месяц</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div><div class="section-title">Где находятся деньги</div><div class="section-sub">Размер статьи и реально управляемая часть</div></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="frozen-row">
+          <div class="frozen-label"><span>Готовая продукция <span class="tag tag-good">управляемо</span></span><strong>21.4 млн ₽</strong></div>
+          <div class="bar"><div class="total" style="width:100%"></div><div class="potential good" id="fgPotentialBar" style="width: 7.65143%;"></div></div>
+          <div class="small">Минимальный ориентир: 4.3 млн ₽. Потенциал по сценарию: <strong id="fgRel">5,7 млн ₽</strong></div>
+        </div>
+        <div class="frozen-row">
+          <div class="frozen-label"><span>Материалы <span class="tag tag-good">ограниченно управляемо</span></span><strong>8.6 млн ₽</strong></div>
+          <div class="bar"><div class="total" style="width:100%"></div><div class="potential good" id="matPotentialBar" style="width: 2.77143%;"></div></div>
+          <div class="small">Минимальный ориентир: 7.1 млн ₽. Доп. материалы под рост СТМ учитываются отдельно.</div>
+        </div>
+        <div class="frozen-row">
+          <div class="frozen-label"><span>НЗП <span class="tag tag-good">управляемо</span></span><strong>10,0 млн ₽</strong></div>
+          <div class="bar"><div class="total" style="width:100%"></div><div class="potential good" id="wipPotentialBar" style="width: 8.27143%;"></div></div>
+          <div class="small">Расчетный ориентир: 4-1.4 млн ₽. Нижняя граница модели - 1.4 млн ₽.</div>
+        </div>
+        <div class="frozen-row">
+          <div class="frozen-label"><span>ДЗ Marketplace <span class="tag tag-neutral">неуправляемо</span></span><strong>5.0 млн ₽</strong></div>
+          <div class="bar"><div class="total" style="width:100%"></div><div class="potential none" style="width:0%"></div></div>
+          <div class="small">Срок выплаты 21 день задается площадкой.</div>
+        </div>
+        <div class="frozen-row">
+          <div class="frozen-label"><span>ДЗ B2B <span class="tag tag-good">управляемо</span></span><strong>4.8 млн ₽</strong></div>
+          <div class="bar"><div class="total" style="width:100%"></div><div class="potential" id="b2bPotentialBar" style="width: 11.4058%;"></div></div>
+          <div class="small">Потенциал при выбранном DSO: <strong id="b2bRel">1,9 млн ₽</strong></div>
+        </div>
+        <div class="frozen-row">
+          <div class="frozen-label"><span>ДЗ СТМ <span class="tag tag-warn">растет вместе с каналом</span></span><strong>0.3 млн ₽</strong></div>
+          <div class="bar"><div class="total" style="width:100%"></div></div>
+          <div class="small">Дополнительная потребность при росте СТМ: <strong id="stmWc">1,3 млн ₽</strong></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title" style="font-size:16px;margin-bottom:14px">Что реально можно изменить</div>
+        <div class="grid3" style="grid-template-columns:1fr">
+          <div class="action">
+            <div class="top"><div class="title">1. B2B</div><span class="tag tag-good">приоритет</span></div>
+            <div class="big"><span>50</span> → <span id="actionDso">30</span> дней</div>
+            <div class="effect" id="actionB2bEffect">Высвобождение: 1,9 млн ₽</div>
+            <div class="small">Самый прямой управляемый рычаг по дебиторке. Marketplace в эту задачу не включаем.</div>
+          </div>
+          <div class="action">
+            <div class="top"><div class="title">2. Запасы</div><span class="tag tag-good">крупнейший разовый эффект</span></div>
+            <div class="big"><span>115</span> → <span id="actionInv">26,2 млн ₽</span></div>
+            <div class="effect" id="actionInvEffect">ГП 5,7 млн ₽ + материалы 0,8 млн ₽ + НЗП 0,8 млн ₽ - материалы под СТМ 0,7 млн ₽ = 6,7 млн ₽</div>
+            <div class="small">Запас разделен на готовую продукцию, материалы и НЗП. Материалы под рост СТМ учитываются автоматически.</div>
+          </div>
+          <div class="action">
+            <div class="top"><div class="title">3. СТМ</div><span class="tag tag-warn">стратегический рычаг</span></div>
+            <div class="big"><span>5</span> → <span id="actionStm">7.128571</span> млн ₽/мес.</div>
+            <div class="effect" id="actionStmEffect">Доп. ЧП: 3,7 млн ₽/мес.; новые дивиденды: 2,2 млн ₽/мес.; на старый долг: 0,9 млн ₽/мес.</div>
+            <div class="small">Чистая рентабельность 65%. Рост СТМ создает новую прибыль, но также новые текущие дивиденды и потребность в оборотном капитале.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div><div class="section-title">Как меняется долг</div><div class="section-sub">Красная линия - текущая модель, зеленая - выбранный сценарий</div></div>
+    </div>
+    <div class="card">
+      <canvas id="debtChart" width="1180" height="320"></canvas>
+      <div class="legend"><span><i class="dot"></i>Без изменений</span><span><i class="dot g"></i>После перестройки</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div><div class="section-title">Как разово уменьшается долг</div><div class="section-sub">Разовое высвобождение не является постоянным ежемесячным доходом</div></div>
+    </div>
+    <div class="card">
+      <div class="waterfall">
+        <div class="step"><div class="t">Исходный долг</div><div class="n">80,0</div><div class="t">млн ₽</div></div>
+        <div class="step"><div class="t">Минус B2B</div><div class="n" id="flowB2b">-1,9</div><div class="t">млн ₽</div></div>
+        <div class="step"><div class="t">Минус чистый эффект запасов</div><div class="n" id="flowInv">-6,7</div><div class="t">млн ₽</div></div>
+        <div class="step"><div class="t">Плюс новая ДЗ СТМ</div><div class="n" id="flowStmWc">+1,3</div><div class="t">млн ₽</div></div>
+        <div class="step"><div class="t">Остаток долга</div><div class="n" id="flowDebt">15,6</div><div class="t">млн ₽</div></div>
+      </div>
+      <div class="explain-grid">
+        <div class="explain-card">
+          <h4>Откуда берется эффект B2B</h4>
+          <p id="b2bExplain">Сейчас B2B продает на 2,9 млн ₽ в месяц при DSO 50 дней. В выбранном сценарии срок оплаты сокращается до 30 дней. Разница в 20 дней уменьшает средний объем денег, зависших в дебиторской задолженности.</p>
+          <div class="formula-box" id="b2bFormula">2,9 млн ₽ / 30 × 20 дней = 1,9 млн ₽ разового высвобождения</div>
+        </div>
+        <div class="explain-card">
+          <h4>Что входит в чистый эффект запасов</h4>
+          <p id="invExplain">Запасы разделены на три части. Высвобождение считается отдельно по готовой продукции, материалам и НЗП. Затем из этого эффекта вычитаются дополнительные материалы, которые нужны для роста СТМ.</p>
+          <div class="formula-box" id="invFormula">ГП: 5,7 млн ₽ + материалы: 0,8 млн ₽ + НЗП: 0,8 млн ₽ - материалы под рост СТМ: 0,7 млн ₽ = 6,7 млн ₽ чистого эффекта</div>
+        </div>
+      </div>
+      <div class="explain-grid">
+        <div class="explain-card">
+          <h4>Почему появляется «плюс новая ДЗ СТМ»</h4>
+          <p id="stmExplain">СТМ получает деньги в среднем через 7 дней, поэтому при росте выручки возникает дополнительная дебиторская задолженность. Это часть денег, которую нельзя считать свободной для погашения старого долга.</p>
+          <div class="formula-box" id="stmFormula">5,7 млн ₽ / 30 × 7 дней = 1,3 млн ₽ дополнительной ДЗ</div>
+        </div>
+        <div class="explain-card">
+          <h4>Как читать этот блок</h4>
+          <p>Это не прибыль и не ежемесячный денежный поток. Здесь показано разовое изменение структуры оборотного капитала: деньги высвобождаются из B2B-дебиторки и запасов, но часть снова требуется для финансирования роста СТМ. Получившийся чистый эффект можно один раз направить на уменьшение старого дивидендного долга.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <div><div class="section-title">Что если?</div><div class="section-sub">Интерактивный сценарный калькулятор</div></div>
+    </div>
+    <div class="controls-layout">
+      <aside class="panel">
+        <h2>Параметры сценария</h2>
+        <div class="control">
+          <div class="labelrow"><span class="label">DSO B2B</span><span class="value" id="b2bDsoV">30 дн.</span></div>
+          <input id="b2bDso" type="range" min="15" max="50" step="1" value="30">
+          <div class="small">Текущий срок: 50 дней.</div>
+        </div>
+        <div class="control">
+          <div class="labelrow"><span class="label">Готовая продукция</span><span class="value" id="fgV">15,7 млн ₽</span></div>
+          <input id="fg" type="range" min="4.29" max="21.43" step="0.1" value="15.71">
+          <div class="small">Сейчас 71.4 млн ₽. Минимальный управленческий ориентир 4.3 млн ₽.</div>
+        </div>
+        <div class="control">
+          <div class="labelrow"><span class="label">Материалы</span><span class="value" id="matV">7,7 млн ₽</span></div>
+          <input id="mat" type="range" min="7.14" max="8.57" step="0.1" value="7.71">
+          <div class="small">Сейчас 30 млн ₽. Минимальный ориентир 7.1 млн ₽ из-за длинных сроков поставки части материалов.</div>
+        </div>
+        <div class="control">
+          <div class="labelrow"><span class="label">НЗП</span><span class="value" id="wipV">2,0 млн ₽</span></div>
+          <input id="wip" type="range" min="1.43" max="2.86" step="0.1" value="2.00">
+          <div class="small">Сейчас 2.9 млн ₽. Расчетный ориентир по циклу 10-12 дней - около 4-1.4 млн ₽.</div>
+        </div>
+        <div class="control">
+          <div class="labelrow"><span class="label">Доп. выручка СТМ / мес.</span><span class="value" id="stmV">5,7 млн ₽</span></div>
+          <input id="stm" type="range" min="0" max="14.29" step="0.1" value="5.71">
+          <div class="small">СТМ - отдельный канал, срок денег 7 дней, ЧП 65%. ГП под СТМ не накапливается: производство под заказ.</div>
+        </div>        <div class="control">
+          <div class="labelrow"><span class="label">Резерв на рост СТМ</span><span class="value" id="stmReserveV">15%</span></div>
+          <input id="stmReserve" type="range" min="0" max="40" step="5" value="15">
+          <div class="small">Доля дополнительной ЧП СТМ, которую оставляем в бизнесе на рост и риски. Остаток после новых дивидендов и этого резерва автоматически идет на старый дивидендный долг.</div>
+        </div>
+        <div class="control">
+          <div class="labelrow"><span class="label">Целевой горизонт</span><span class="value" id="horizonV">36 мес.</span></div>
+          <input id="horizon" type="range" min="12" max="60" step="12" value="36">
+          <div class="small">Желательно 3 года, допустимо до 5 лет.</div>
+        </div>
+      </aside>
+
+      <div class="card">
+        <div class="ba-layout">
+          <div>
+            <div class="section-title" style="font-size:16px;margin-bottom:12px">До / после</div>
+            <table class="table">
+              <thead><tr><th>Показатель</th><th>Сейчас</th><th>После изменений</th></tr></thead>
+              <tbody id="beforeAfterBody"><tr><td>B2B DSO</td><td>50 дней</td><td>30 дней</td></tr><tr><td>Готовая продукция</td><td>21.4 млн ₽</td><td>15,7 млн ₽</td></tr><tr><td>Материалы</td><td>8.6 млн ₽</td><td>7,7 млн ₽ + 0,7 млн ₽ под рост СТМ</td></tr><tr><td>НЗП</td><td>10,0 млн ₽</td><td>2,0 млн ₽</td></tr><tr><td>Запасы всего</td><td>32.9 млн ₽</td><td>26,2 млн ₽</td></tr><tr><td>Выручка СТМ / мес.</td><td>5,0 млн ₽</td><td>7,1 млн ₽</td></tr><tr><td>Долг по дивидендам</td><td>22.9 млн ₽</td><td>15,6 млн ₽</td></tr><tr><td>Изменение долга / мес.</td><td>+0,3 млн ₽</td><td>-0,9 млн ₽</td></tr><tr><td>Срок погашения</td><td>долг растет</td><td>17 мес.</td></tr></tbody>
+            </table>
+            <div class="note" style="margin-top:14px">Рост СТМ не требует накопления готовой продукции, потому что канал работает под заказ. При этом дополнительная потребность в материалах учитывается автоматически.</div>
+          </div>
+          <div class="limits-box">
+            <div class="section-title" style="font-size:16px">Ограничения модели</div>
+            <div class="assump">
+              1. Минимальные уровни ГП, материалов и НЗП являются управленческими ориентирами, а не нормативами по SKU.<br><br>
+              2. Marketplace зафиксирован на 21 дне: условия выплат задает площадка.<br><br>
+              3. Значимые отсрочки поставщиков не закладываются.<br><br>
+              4. Минимальный остаток денежных средств 30 млн ₽ не используется для дивидендов.<br><br>
+              5. Для СТМ используется чистая рентабельность 65%, срок получения денег 7 дней и дополнительная потребность в материалах 13% от дополнительной выручки.<br><br>
+              6. Сезонность и точные сроки поставки по группам материалов пока не разложены по SKU, поэтому минимумы запасов требуют управленческой проверки.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="card" style="background:#f8faff;border-color:#d9e2ff">
+      <div class="section-title" style="font-size:16px;margin-bottom:10px">Почему сумма на старый долг считается автоматически</div>
+      <div class="assump" style="font-size:12px;color:#344054">
+        Логика расчета такая:<br><br>
+        <strong>Дополнительная ЧП СТМ</strong><br>
+        минус <strong>60% новых текущих дивидендов</strong><br>
+        минус <strong>резерв, который оставляем в бизнесе на рост СТМ</strong><br>
+        = <strong>денежный поток на погашение старого дивидендного долга</strong>.<br><br>
+        Почему так: рост СТМ увеличивает не только деньги, но и прибыль. По действующему правилу 60% этой новой прибыли тоже становятся новыми дивидендами. Поэтому направлять всю дополнительную ЧП на старый долг некорректно. Оставшийся после текущих дивидендов и внутреннего резерва денежный поток можно использовать для сокращения накопленных 80 млн ₽.<br><br>
+        <strong>Важно:</strong> для роста СТМ учтена дополнительная потребность в материалах: 0.37 млн ₽ на каждые 2.9 млн ₽ дополнительной выручки. Готовая продукция под СТМ не накапливается, так как производство идет под заказ.
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const base={debt:22.857143,profit:2.857143,div:1.714286,pay:1.428571,b2bRev:2.857143,b2bDso:50,fg:21.428571,mat:8.571429,wip:2.857143,stmBase:1.428571,stmMargin:.65,stmDso:7,stmMatRatio:.13};
+const el=id=>document.getElementById(id);
+const fmt=x=>x.toLocaleString('ru-RU',{minimumFractionDigits:1,maximumFractionDigits:1})+' млн ₽';
+const fmtN=x=>x.toLocaleString('ru-RU',{minimumFractionDigits:1,maximumFractionDigits:1});
+
+
+const scenarios={
+  current:{dso:50,fg:21.428571,mat:8.571429,wip:2.857143,stm:0,reserve:15,horizon:36,desc:'Без изменений: B2B 50 дней, ГП 71.4 млн ₽, материалы 8.6 млн ₽, НЗП 2.9 млн ₽. Долг продолжает расти примерно на 1 млн ₽ в месяц.'},
+  realistic:{dso:30,fg:15.714286,mat:7.714286,wip:2.000000,stm:5.714286,reserve:15,horizon:36,desc:'Умеренная оптимизация: B2B 30 дней, ГП 51.4 млн ₽, материалы 27 млн ₽, НЗП 7 млн ₽ и рост СТМ примерно на 5.7 млн ₽ в месяц. Материалы под рост СТМ учитываются автоматически.'},
+  target3:{dso:25,fg:11.428571,mat:7.142857,wip:1.428571,stm:7.142857,reserve:10,horizon:36,desc:'Более интенсивный сценарий: B2B 25 дней, ГП 11.4 млн ₽, материалы 7.1 млн ₽, НЗП 1.4 млн ₽, рост СТМ +7.1 млн ₽. Цель - приблизиться к закрытию долга за 3 года.'},
+  target5:{dso:35,fg:17.142857,mat:8.000000,wip:2.285714,stm:4.285714,reserve:15,horizon:60,desc:'Более мягкий сценарий: B2B 35 дней, ГП 17.1 млн ₽, материалы 8.0 млн ₽, НЗП 2.3 млн ₽, рост СТМ +4.3 млн ₽. Горизонт - до 5 лет.'}
+};
+
+function applyScenario(key){
+  const s=scenarios[key];
+  el('b2bDso').value=s.dso;
+  el('fg').value=s.fg;
+  el('mat').value=s.mat;
+  el('wip').value=s.wip;
+  el('stm').value=s.stm;
+  el('stmReserve').value=s.reserve;
+  el('horizon').value=s.horizon;
+  el('scenarioDesc').textContent=s.desc;
+  calc();
+}
+
+function calc(){
+  const dso=+el('b2bDso').value, fg=+el('fg').value, mat=+el('mat').value, wip=+el('wip').value, stmAdd=+el('stm').value;
+  const stmReserve=+el('stmReserve').value/100, horizon=+el('horizon').value;
+
+  const b2bRelease=Math.max(0,base.b2bRev*(base.b2bDso-dso)/30);
+  const fgRelease=Math.max(0,base.fg-fg);
+  const matRelease=Math.max(0,base.mat-mat);
+  const wipRelease=Math.max(0,base.wip-wip);
+  const grossInvRelease=fgRelease+matRelease+wipRelease;
+  const stmMatNeed=stmAdd*base.stmMatRatio;
+  const stmWC=stmAdd*base.stmDso/30;
+  const netInvRelease=Math.max(0,grossInvRelease-stmMatNeed);
+  const oneTime=Math.max(0,b2bRelease+netInvRelease-stmWC);
+
+  const incrProfit=stmAdd*base.stmMargin;
+  const incrDiv=incrProfit*.60;
+  const reserveAmount=incrProfit*stmReserve;
+  const monthlyOldDebt=Math.max(0,incrProfit-incrDiv-reserveAmount);
+  const debtAfter=Math.max(0,base.debt-oneTime);
+  const term=monthlyOldDebt>0?debtAfter/monthlyOldDebt:Infinity;
+
+  el('releaseKpi').textContent=fmt(oneTime);
+  el('debtAfterKpi').textContent=fmt(debtAfter);
+  el('termKpi').textContent=isFinite(term)?Math.ceil(term)+' мес.':'не сокращается';
+
+  const goalOk=isFinite(term)&&term<=horizon;
+  el('heroText').textContent=goalOk
+    ? `Выбранный сценарий позволяет закрыть старый дивидендный долг примерно за ${Math.ceil(term)} мес.`
+    : `Выбранный сценарий не закрывает старый дивидендный долг за ${horizon} мес.`;
+  el('heroDetail').textContent=
+    `Чтобы изменить траекторию долга, модель предполагает: B2B ${base.b2bDso} → ${dso} дней, ГП ${base.fg} → ${fg} млн ₽, материалы ${base.mat} → ${mat} млн ₽, НЗП ${base.wip} → ${wip} млн ₽, `+
+    `дополнительную выручку СТМ ${fmt(stmAdd)} в месяц. Это дает разовое высвобождение ${fmt(oneTime)}, `+
+    `после чего остается ${fmt(debtAfter)} старого долга. Дополнительная ЧП СТМ составляет ${fmt(incrProfit)} в месяц. `+
+    `Из нее ${fmt(incrDiv)} формируют новые текущие дивиденды, ${fmt(reserveAmount)} остается в бизнесе как резерв на рост, `+
+    `а остаток ${fmt(monthlyOldDebt)} автоматически направляется на погашение старого долга.`;
+  const chip=el('goalChip');
+  chip.className='goal-chip '+(goalOk?'goal-good':'goal-bad');
+  chip.textContent=goalOk?`Цель ≤ ${horizon} мес. достигнута`:`До цели ≤ ${horizon} мес. не хватает`;
+
+  el('b2bDsoV').textContent=dso+' дн.';
+  el('fgV').textContent=fmt(fg);
+  el('matV').textContent=fmt(mat);
+  el('wipV').textContent=fmt(wip);
+  el('stmV').textContent=fmt(stmAdd);
+  el('stmReserveV').textContent=Math.round(stmReserve*100)+'%';
+  el('horizonV').textContent=horizon+' мес.';
+
+  el('actionDso').textContent=dso;
+  el('actionInv').textContent=fmt(fg+mat+wip+stmMatNeed);
+  el('actionStm').textContent=base.stmBase+stmAdd;
+  el('actionB2bEffect').textContent=`Высвобождение: ${fmt(b2bRelease)}`;
+  el('actionInvEffect').textContent=`ГП ${fmt(fgRelease)} + материалы ${fmt(matRelease)} + НЗП ${fmt(wipRelease)} - материалы под СТМ ${fmt(stmMatNeed)} = ${fmt(netInvRelease)}`;
+  el('actionStmEffect').textContent=`Доп. ЧП: ${fmt(incrProfit)}/мес.; новые дивиденды: ${fmt(incrDiv)}/мес.; на старый долг: ${fmt(monthlyOldDebt)}/мес.`;
+
+  el('b2bRel').textContent=fmt(b2bRelease);
+  el('fgRel').textContent=fmt(fgRelease);
+  el('stmWc').textContent=fmt(stmWC);
+
+  el('b2bPotentialBar').style.width=Math.min(100,b2bRelease/16.7*100)+'%';
+  el('fgPotentialBar').style.width=Math.min(100,fgRelease/75*100)+'%';
+  el('matPotentialBar').style.width=Math.min(100,matRelease/30*100)+'%';
+  el('wipPotentialBar').style.width=Math.min(100,wipRelease/10*100)+'%';
+
+  el('flowB2b').textContent='-'+fmtN(b2bRelease);
+  el('flowInv').textContent='-'+fmtN(netInvRelease);
+  el('flowStmWc').textContent='+'+fmtN(stmWC);
+  el('flowDebt').textContent=fmtN(debtAfter);
+
+  el('b2bExplain').textContent =
+    `Сейчас B2B продает на ${fmt(base.b2bRev)} в месяц при DSO ${base.b2bDso} дней. В выбранном сценарии срок оплаты сокращается до ${dso} дней. Разница в ${base.b2bDso-dso} дней уменьшает средний объем денег, зависших в дебиторской задолженности.`;
+  el('b2bFormula').textContent =
+    `${fmt(base.b2bRev)} / 30 × ${base.b2bDso-dso} дней = ${fmt(b2bRelease)} разового высвобождения`;
+
+  el('invExplain').textContent =
+    `Запасы разделены на три части. Высвобождение считается отдельно по готовой продукции, материалам и НЗП. Затем из этого эффекта вычитаются дополнительные материалы, которые нужны для роста СТМ.`;
+  el('invFormula').textContent =
+    `ГП: ${fmt(fgRelease)} + материалы: ${fmt(matRelease)} + НЗП: ${fmt(wipRelease)} - материалы под рост СТМ: ${fmt(stmMatNeed)} = ${fmt(netInvRelease)} чистого эффекта`;
+
+  el('stmExplain').textContent =
+    `СТМ получает деньги в среднем через ${base.stmDso} дней, поэтому при росте выручки возникает дополнительная дебиторская задолженность. Это часть денег, которую нельзя считать свободной для погашения старого долга.`;
+  el('stmFormula').textContent =
+    `${fmt(stmAdd)} / 30 × ${base.stmDso} дней = ${fmt(stmWC)} дополнительной ДЗ`;
+
+  const monthlyChangeCurrent=base.div-base.pay;
+  const selectedMonthlyChange=-monthlyOldDebt;
+
+  const rows=[
+    ['B2B DSO','50 дней',dso+' дней'],
+    ['Готовая продукция','21.4 млн ₽',fmt(fg)],
+    ['Материалы','8.6 млн ₽',fmt(mat)+' + '+fmt(stmMatNeed)+' под рост СТМ'],
+    ['НЗП','10,0 млн ₽',fmt(wip)],
+    ['Запасы всего','32.9 млн ₽',fmt(fg+mat+wip+stmMatNeed)],
+    ['Выручка СТМ / мес.','5,0 млн ₽',fmt(base.stmBase+stmAdd)],
+    ['Долг по дивидендам','22.9 млн ₽',fmt(debtAfter)],
+    ['Изменение долга / мес.','+'+fmtN(monthlyChangeCurrent)+' млн ₽',monthlyOldDebt>0?'-'+fmtN(monthlyOldDebt)+' млн ₽':'0'],
+    ['Срок погашения','долг растет',isFinite(term)?Math.ceil(term)+' мес.':'не сокращается']
+  ];
+  el('beforeAfterBody').innerHTML=rows.map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('');
+
+  drawDebtChart(debtAfter,monthlyOldDebt,horizon);
+}
+
+function drawDebtChart(startDebt,monthlyPay,horizon){
+  const c=el('debtChart'),ctx=c.getContext('2d'),W=c.width,H=c.height,p=42;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='#e6eaf0';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){let y=p+(H-2*p)*i/4;ctx.beginPath();ctx.moveTo(p,y);ctx.lineTo(W-p,y);ctx.stroke();}
+  const months=60, maxY=150;
+  const x=m=>p+(W-2*p)*m/months;
+  const y=v=>H-p-(H-2*p)*v/maxY;
+
+  ctx.fillStyle='#667085';ctx.font='11px Arial';
+  [0,50,100,150].forEach(v=>ctx.fillText(String(v),8,y(v)+4));
+  [0,12,24,36,48,60].forEach(m=>ctx.fillText(String(m),x(m)-7,H-14));
+
+  ctx.strokeStyle='#c23b3b';ctx.lineWidth=3;ctx.beginPath();
+  for(let m=0;m<=months;m++){
+    const v=80+m*1;
+    if(m===0)ctx.moveTo(x(m),y(v));else ctx.lineTo(x(m),y(v));
+  }
+  ctx.stroke();
+
+  ctx.strokeStyle='#17875d';ctx.lineWidth=3;ctx.beginPath();
+  for(let m=0;m<=months;m++){
+    const v=Math.max(0,startDebt-monthlyPay*m);
+    if(m===0)ctx.moveTo(x(m),y(v));else ctx.lineTo(x(m),y(v));
+  }
+  ctx.stroke();
+
+  ctx.strokeStyle='#98a2b3';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(x(horizon),p);ctx.lineTo(x(horizon),H-p);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#667085';ctx.fillText('цель',x(horizon)-12,p-8);
+}
+
+['b2bDso','fg','mat','wip','stm','stmReserve','horizon'].forEach(id=>el(id).addEventListener('input',calc));
+el('scenarioSelect').addEventListener('change',e=>applyScenario(e.target.value));
+applyScenario('realistic');
+</script>
+
+
+</body><div id="codex-browser-sidebar-comments-root" style="position: fixed; inset: 0px; pointer-events: none; z-index: 2147483647;"></div></html>
